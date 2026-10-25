@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kéo thả kỳ diệu | Trò chơi học tập</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#213861;--muted:#7285a4;--blue:#3b76ff;--sky:#eaf4ff;--mint:#e7faf0;--pink:#fff0ef;--card:#fff;--ring:#dbe6f6}
+/* CHUAN FONT TOAN BO WEBSITE: QUICKSAND BOLD 700 */
+*,*::before,*::after{box-sizing:border-box;font-family:'Quicksand',sans-serif!important;font-weight:700!important}
+html,body{margin:0;min-height:100%;font-family:'Quicksand',sans-serif;font-weight:700;color:var(--ink)}
+body{background:radial-gradient(ellipse at 11% 8%,#f9dff0 0,transparent 26%),radial-gradient(ellipse at 87% 9%,#d8f0ff 0,transparent 29%),#f7f9ff}
+button,input,select,textarea{font-family:'Quicksand',sans-serif!important;font-weight:700!important}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}
+.app{max-width:1440px;padding:20px 26px 38px;margin:auto}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}.brand-logo{display:grid;place-items:center;background:linear-gradient(135deg,#ffad4b,#ff617e);color:#fff;border:3px solid #fff;box-shadow:0 6px 18px #e7a7ac69;width:52px;height:52px;border-radius:18px;font-size:26px;transform:rotate(-6deg)}
+h1{font-size:clamp(20px,2.3vw,28px);line-height:1.1;margin:0;letter-spacing:-.5px}.brand p{margin:5px 0 0;color:var(--muted);font-size:12px}
+.controls{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.btn{border:1px solid #e1e9f5;background:#fff;color:var(--ink);min-height:42px;padding:9px 15px;border-radius:15px;box-shadow:0 3px 9px #cfd9ed40;white-space:nowrap}.btn:hover{border-color:#adcefc}.btn.primary{color:white;background:linear-gradient(135deg,#5887ff,#3468ea);border-color:#497ef1}.btn.secondary{background:#fff5db;border-color:#f7e1aa}.btn.active{color:#fff;background:#334b7b}
+.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:17px;align-items:start}.layout.edit{grid-template-columns:minmax(0,1fr) 318px}
+.stage-card{background:#fff;border:1px solid #e2ebf9;padding:12px;border-radius:29px;box-shadow:0 16px 45px #a3b6d832;min-width:0}
+.stage-wrap{position:relative;border-radius:20px;overflow:hidden;background:#eaf8ff}canvas{display:block;width:100%;height:auto;aspect-ratio:1200/675;touch-action:none;user-select:none;cursor:grab}canvas.dragging{cursor:grabbing}canvas.edit-mode{cursor:crosshair}
+.stage-help{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:13px 11px 4px;color:#7285a4;font-size:12px}.stage-help strong{color:#4363a8}.pill{padding:6px 10px;border-radius:20px;background:#eef7ff}
+.side{display:none;background:#fff;padding:18px;border:1px solid #e2ebf9;border-radius:25px;box-shadow:0 10px 28px #b3c2d631;max-height:calc(100vh - 112px);overflow:auto}.layout.edit .side{display:block}.side h2{font-size:18px;margin:0 0 7px}.side h3{font-size:14px;margin:17px 0 9px;padding-top:13px;border-top:1px dashed #dce7f7}.sub{color:#7a8da9;font-size:12px;line-height:1.6;margin:0 0 12px}.field{display:flex;flex-direction:column;gap:5px;margin:8px 0;font-size:12px}.field input,.field select,.field textarea{border:1px solid #dce6f3;border-radius:11px;min-height:37px;padding:9px;background:#fbfdff;color:#273b60;max-width:100%;outline:none}.field textarea{min-height:60px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:#7ba7ff}.field input[type=file]{font-size:11px}.field input[type=range]{padding:0;min-height:20px}.mini-row{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.mini-row .btn{font-size:12px;min-height:35px;padding:6px 10px;border-radius:11px}.mini-row .field{flex:1;min-width:110px}
+.previews{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.preview{height:109px;border:1px solid #dce6f3;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:repeating-conic-gradient(#fff 0% 25%,#e9eef6 0% 50%) 50%/16px 16px;overflow:hidden}.preview img{max-width:96%;max-height:80px;object-fit:contain}.preview small{font-size:10px;background:#ffffffd9;border-radius:6px;padding:1px 5px}.note{font-size:11px;color:#7890a6;line-height:1.6}.info{padding:10px 13px;border-radius:13px;background:#eff6ff;font-size:12px;line-height:1.5;margin:10px 0}.footerline{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:#8ca0b7;margin-top:12px;padding:0 8px}
+.overlay{position:absolute;inset:0;background:#23365a77;display:none;align-items:center;justify-content:center;z-index:3;padding:12px}.overlay.show{display:flex}.win-card{background:#fff;max-width:390px;width:100%;padding:28px 22px;text-align:center;border-radius:28px;box-shadow:0 20px 70px #2030524f;animation:pop .35s both}.win-star{font-size:53px}.win-card h2{font-size:26px;margin:5px 0;color:#2967c4}.win-card p{font-size:14px;color:#7f91aa}.win-card .mini-row{justify-content:center;margin-top:16px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#253b68;color:#fff;border-radius:13px;padding:10px 16px;font-size:13px;max-width:min(90vw,700px);box-shadow:0 8px 25px #253b6833;z-index:20;display:none;text-align:center}
+@keyframes pop{from{transform:scale(.83);opacity:.2}to{transform:scale(1);opacity:1}}
+@media(max-width:1090px){.layout.edit{grid-template-columns:minmax(0,1fr)}.side{max-height:none}.app{padding:12px}.stage-card{padding:7px;border-radius:20px}.stage-wrap{border-radius:15px}}
+@media(max-width:640px){.topbar{gap:12px}.brand-logo{width:44px;height:44px}.controls{width:100%;gap:6px}.controls .btn{flex:1;padding:7px 9px;font-size:11px;min-height:36px}.stage-help{font-size:11px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="brand"><div class="brand-logo">✦</div><div><h1>Kéo thả kỳ diệu</h1><p>Học vui mỗi ngày • Dành cho học sinh tiểu học</p></div></div>
+  <div class="controls">
+    <span class="pill" id="progress">Hoàn thành: 0/1</span>
+    <button id="soundBtn" class="btn" title="Bật/tắt âm thanh">🔊 Âm thanh</button>
+    <button id="resetBtn" class="btn">↻ Chơi lại</button>
+    <button id="fullBtn" class="btn">⛶ Toàn màn hình</button>
+    <button id="editBtn" class="btn primary">⚙ Chế độ giáo viên</button>
+  </div>
+</header>
+<div class="layout" id="layout">
+  <section class="stage-card">
+    <div class="stage-wrap" id="stageWrap">
+      <canvas id="game" role="img" aria-label="Bài tập kéo thả: kéo hình vào vị trí còn thiếu"></canvas>
+      <div class="overlay" id="winOverlay"><div class="win-card">
+        <div class="win-star">🌟</div><h2>Tuyệt vời!</h2><p id="winText">Con đã hoàn thành bài tập!</p>
+        <div class="mini-row"><button class="btn secondary" id="againBtn">↻ Chơi lại</button><button class="btn primary" id="nextBtn">Bài tiếp theo →</button></div>
+      </div></div>
+    </div>
+    <div class="stage-help"><span id="hint">👆 Kéo hình tròn màu đỏ vào dấu hỏi.</span><strong id="editHelp">Thả bên ngoài vùng đích để đưa hình trở về.</strong></div>
+  </section>
+  <aside class="side" id="editor" aria-label="Công cụ tạo bài tập cho giáo viên">
+    <h2>🛠 Xưởng tạo bài tập</h2><p class="sub">Chỉnh nội dung, tải hình lên, tạo vùng thả và kéo trực tiếp các hình trên bảng để bố trí.</p>
+    <div class="mini-row"><button id="newQuestion" class="btn primary">＋ Thêm bài</button><button id="deleteQuestion" class="btn">Xóa bài</button></div>
+    <label class="field">Chọn bài tập<select id="questionSelect"></select></label>
+    <label class="field">Tên bài tập<input id="qTitle" maxlength="90"></label>
+    <label class="field">Hướng dẫn học sinh<textarea id="qInstruction" maxlength="220"></textarea></label>
+    <label class="field">Ảnh nền bài tập (tùy chọn)<input id="bgUpload" type="file" accept="image/png,image/jpeg,image/webp"></label>
+    <div class="mini-row"><button class="btn" id="removeBg">Bỏ ảnh nền</button><button class="btn" id="undoBtn">↶ Hoàn tác</button><button class="btn" id="redoBtn">↷ Làm lại</button></div>
+    <h3>① Tải và tách nền vật thể</h3>
+    <label class="field">Ảnh vật thể (PNG, JPG, WebP)<input id="itemUpload" type="file" accept="image/png,image/jpeg,image/webp"></label>
+    <label class="field">Ngưỡng tách màu nền: <span id="thresholdValue">30</span><input id="threshold" type="range" min="5" max="120" value="30"></label>
+    <div class="mini-row"><button class="btn" id="removeWhite">✂ Tách nền</button><button class="btn" id="undoCut">↶ Ảnh gốc</button></div>
+    <div class="previews"><div class="preview"><img id="previewBefore" alt="Ảnh gốc" hidden><small>Trước</small></div><div class="preview"><img id="previewAfter" alt="Ảnh tách nền" hidden><small>Sau</small></div></div>
+    <div class="mini-row"><button class="btn primary" id="addImage" disabled>＋ Dùng ảnh này</button></div>
+    <p class="note">Tách nền hoạt động với nền trắng hoặc một màu đơn giản chạm mép ảnh. Với ảnh phức tạp, hãy dùng PNG trong suốt hoặc chỉnh ảnh trước khi tải.</p>
+    <h3>② Thiết lập hình và đáp án</h3>
+    <label class="field">Chọn vật thể<select id="itemSelect"></select></label>
+    <label class="field">Tên vật thể<input id="itemName" maxlength="70"></label>
+    <label class="field">Kích thước vật thể (px)<input id="itemSize" type="number" min="25" max="270" step="5"></label>
+    <label class="field">Đáp án đúng của vật thể<select id="targetSelect"></select></label>
+    <button class="btn" id="deleteItem">Xóa vật thể đã chọn</button>
+    <h3>③ Vùng thả</h3>
+    <div class="mini-row"><button class="btn primary" id="addZone">＋ Thêm vùng thả</button><button class="btn" id="deleteZone">Xóa vùng thả</button></div>
+    <label class="field">Chọn vùng thả<select id="zoneSelect"></select></label>
+    <label class="field">Bán kính vùng thả (px)<input id="zoneRadius" type="number" min="25" max="180"></label>
+    <p class="info">💡 Trên khung trò chơi, kéo <b>hình</b> để đổi vị trí ban đầu; kéo <b>vòng nét đứt</b> để đặt vị trí cần thả. Mỗi hình chọn một vùng đích ở mục ②.</p>
+    <h3>④ Lưu và chia sẻ</h3>
+    <div class="mini-row"><button class="btn primary" id="saveBtn">💾 Lưu trình duyệt</button><button class="btn" id="exportBtn">↓ Xuất JSON</button></div>
+    <label class="field">Nhập lại bài tập (.json)<input id="importFile" type="file" accept="application/json,.json"></label>
+    <p class="note">Ảnh được đóng gói trong file JSON xuất ra. Bản nháp lưu bằng IndexedDB của trình duyệt; không cần máy chủ.</p>
+    <button class="btn secondary" id="previewBtn" style="width:100%">▶ Chơi thử bài hiện tại</button>
+  </aside>
+</div>
+<div class="footerline"><span>Thiết kế dạng 2D Canvas • Tương thích chuột và cảm ứng</span><span id="status">Sẵn sàng!</span></div>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+'use strict';
+// ======================================
+// CẤU HÌNH VÀ TIỆN ÍCH
+// ======================================
+const W=1200,H=675, canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const $=id=>document.getElementById(id);
+const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const easeOut=t=>1-Math.pow(1-t,3);
+const easeOutBack=t=>1+2.2*Math.pow(t-1,3)+1.2*Math.pow(t-1,2);
+const uid=()=> 'id-'+Math.random().toString(36).slice(2,10);
+const clone=x=>JSON.parse(JSON.stringify(x));
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function rounded(x,y,w,h,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
+function outlined(x,y,w,h,r,color,width=2){ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.stroke()}
+function ctext(t,x,y,size=22,color='#244167',align='center') {ctx.font=`700 ${size}px "Quicksand", sans-serif`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.fillStyle=color;ctx.fillText(String(t),x,y)}
+function wrapText(s,x,y,width,lineHeight,maxLines=2){
+ ctx.font='700 22px "Quicksand", sans-serif';const words=String(s).split(/\s+/);let line='',lines=[];
+ for(const w of words){const test=line?line+' '+w:w;if(ctx.measureText(test).width>width&&line){lines.push(line);line=w}else line=test}
+ if(line)lines.push(line);lines.slice(0,maxLines).forEach((l,i)=>ctext(l,x,y+i*lineHeight,22,'#49648f'));
+}
+function notify(message){$('status').textContent=message;$('toast').textContent=message;$('toast').style.display='block';clearTimeout(notify.timer);notify.timer=setTimeout(()=>$('toast').style.display='none',2700)}
+function fitCanvas(){const ratio=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(W*ratio);canvas.height=Math.round(H*ratio);ctx.setTransform(ratio,0,0,ratio,0,0)}
+addEventListener('resize',fitCanvas);fitCanvas();
+// ======================================
+// ẢNH PNG, KÊNH ALPHA, TÁCH NỀN
+// ======================================
+const assetCache=new Map();
+function imageFromData(dataUrl){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(new Error('Không đọc được ảnh'));img.src=dataUrl})}
+function pixelsOf(img){const cvs=document.createElement('canvas');cvs.width=img.naturalWidth||img.width;cvs.height=img.naturalHeight||img.height;const c=cvs.getContext('2d',{willReadFrequently:true});c.drawImage(img,0,0);return {cvs,c,image:c.getImageData(0,0,cvs.width,cvs.height)}}
+function trimTransparent(cvs,alphaThreshold=8){
+ const c=cvs.getContext('2d',{willReadFrequently:true}),w=cvs.width,h=cvs.height,data=c.getImageData(0,0,w,h).data;
+ let minX=w,minY=h,maxX=-1,maxY=-1;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){if(data[(y*w+x)*4+3]>alphaThreshold){minX=Math.min(minX,x);minY=Math.min(minY,y);maxX=Math.max(maxX,x);maxY=Math.max(maxY,y)}}
+ if(maxX<0)throw Error('Ảnh không còn vật thể. Hãy giảm ngưỡng hoặc dùng ảnh gốc.');
+ const out=document.createElement('canvas'),pad=2;out.width=maxX-minX+1+pad*2;out.height=maxY-minY+1+pad*2;
+ out.getContext('2d').drawImage(cvs,minX,minY,maxX-minX+1,maxY-minY+1,pad,pad,maxX-minX+1,maxY-minY+1);
+ return out.toDataURL('image/png');
+}
+// Flood fill nền liên thông từ rìa: KHÔNG xóa vùng trắng nằm khép kín bên trong vật thể.
+function removePlainBackground(img,tolerance){
+ const {cvs,c,image}=pixelsOf(img),{data,width:w,height:h}=image;
+ if(w*h>6500000)throw Error('Ảnh quá lớn để xử lý an toàn (tối đa khoảng 6,5 triệu pixel).');
+ const corners=[0,(w-1)*4,((h-1)*w)*4,(w*h-1)*4];
+ const ref=[0,1,2].map(k=>corners.reduce((sum,i)=>sum+data[i+k],0)/corners.length);
+ const diff=i=>Math.hypot(data[i]-ref[0],data[i+1]-ref[1],data[i+2]-ref[2]);
+ const seen=new Uint8Array(w*h),queue=new Int32Array(w*h);let head=0,tail=0;
+ const add=p=>{if(!seen[p]&&data[p*4+3]>0&&diff(p*4)<=tolerance){seen[p]=1;queue[tail++]=p}};
+ for(let x=0;x<w;x++){add(x);add((h-1)*w+x)}
+ for(let y=0;y<h;y++){add(y*w);add(y*w+w-1)}
+ while(head<tail){const p=queue[head++],x=p%w,y=(p-x)/w;if(x>0)add(p-1);if(x<w-1)add(p+1);if(y>0)add(p-w);if(y<h-1)add(p+w)}
+ // Đệm một pixel ở mép để giảm viền trắng nhưng vẫn giữ anti-aliasing.
+ for(let p=0;p<seen.length;p++)if(seen[p])data[p*4+3]=0;
+ for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+  const p=y*w+x,i=p*4;if(seen[p]||data[i+3]===0)continue;
+  if((seen[p-1]||seen[p+1]||seen[p-w]||seen[p+w])&&diff(i)<tolerance*1.65){
+   data[i+3]=Math.round(data[i+3]*clamp((diff(i)-tolerance*.7)/(tolerance*.95),0,1));
+  }
+ }
+ c.putImageData(image,0,0);return trimTransparent(cvs);
+}
+function circleData(color){
+ const cv=document.createElement('canvas');cv.width=150;cv.height=150;const cx=cv.getContext('2d');
+ cx.beginPath();cx.arc(75,75,70,0,Math.PI*2);cx.fillStyle=color;cx.fill();
+ cx.save();cx.globalAlpha=.2;const hi=cx.createRadialGradient(50,40,5,75,75,75);hi.addColorStop(0,'white');hi.addColorStop(1,'transparent');cx.fillStyle=hi;cx.beginPath();cx.arc(75,75,70,0,Math.PI*2);cx.fill();cx.restore();
+ return trimTransparent(cv);
+}
+async function registerAsset(dataUrl){
+ if(assetCache.has(dataUrl))return assetCache.get(dataUrl);
+ const img=await imageFromData(dataUrl);const {image}=pixelsOf(img);
+ const result={img,width:img.width,height:img.height,alpha:image.data.filter((_,i)=>i%4===3)};
+ assetCache.set(dataUrl,result);return result;
+}
+// ======================================
+// DỮ LIỆU BÀI TẬP
+// ======================================
+const colors=['#ff4057','#ffd21f','#19b7eb'];
+function shapeData(kind,color){
+ const cv=document.createElement('canvas');cv.width=150;cv.height=150;const c=cv.getContext('2d');
+ c.fillStyle=color;c.beginPath();
+ if(kind==='triangle'){c.moveTo(75,5);c.lineTo(145,141);c.lineTo(5,141);c.closePath()}
+ else if(kind==='square'){c.rect(9,9,132,132)}
+ else{c.arc(75,75,70,0,Math.PI*2)}
+ c.fill();return trimTransparent(cv);
+}
+function demo(){
+ const red=circleData(colors[0]),yellow=circleData(colors[1]),blue=circleData(colors[2]); const pink='#ff2c91', triangle=shapeData('triangle',pink), round=shapeData('circle',pink), square=shapeData('square',pink);
+ return {version:1,active:0,questions:[{id:'sample',title:'Tìm hình còn thiếu',instruction:'Quan sát quy luật và kéo hình còn thiếu vào dấu hỏi!',demo:true,background:null,
+  items:[{id:'red',name:'Hình tròn đỏ',data:red,x:382,y:555,size:94,targetId:'z1',label:'A'},
+         {id:'yellow',name:'Hình tròn vàng',data:yellow,x:600,y:555,size:94,targetId:null,label:'B'},
+         {id:'blue',name:'Hình tròn xanh',data:blue,x:818,y:555,size:94,targetId:null,label:'C'}],
+  zones:[{id:'z1',x:832,y:294,r:53}]
+ },{id:'sample2',title:'Tìm hình còn thiếu – Bài 2',instruction:'Quan sát dãy hình và kéo hình còn thiếu vào dấu hỏi!',demo:'shapes',background:null,
+  items:[{id:'triangle',name:'Tam giác hồng',data:triangle,x:382,y:555,size:94,targetId:'z2',label:'A'},
+         {id:'circle2',name:'Hình tròn hồng',data:round,x:600,y:555,size:94,targetId:null,label:'B'},
+         {id:'square2',name:'Hình vuông hồng',data:square,x:818,y:555,size:94,targetId:null,label:'C'}],
+  zones:[{id:'z2',x:832,y:294,r:53,noRing:true}]
+ }]};
+}
+let project=demo(),editMode=false,selectedItem=null,selectedZone=null,history=[],future=[];
+let stage={positions:{},locked:new Set(),occupied:{},drag:null,animations:new Map(),effects:[],time:0,shakeStart:0,redStart:0,completed:false};
+const question=()=>project.questions[project.active];
+const getItem=id=>question().items.find(i=>i.id===id);
+const getZone=id=>question().zones.find(z=>z.id===id);
+function clearStage(){stage={positions:{},locked:new Set(),occupied:{},drag:null,animations:new Map(),effects:[],time:0,shakeStart:0,redStart:0,completed:false};$('winOverlay').classList.remove('show');updateProgress()}
+function pushHistory(){history.push(clone(project));if(history.length>25)history.shift();future=[]}
+function restore(p){project=p;assetCache.clear();clearStage();updateEditor();preload();}
+function preload(){for(const q of project.questions){for(const it of q.items)registerAsset(it.data).catch(()=>{});if(q.background)registerAsset(q.background).catch(()=>{})}}
+function commit(){updateEditor();updateProgress()}
+function currentPos(it){return stage.positions[it.id] || {x:it.x,y:it.y}}
+function activePosition(it){const a=stage.animations.get(it.id);return a?{x:a.x,y:a.y}:currentPos(it)}
+function updateProgress(){const done=stage.locked.size,total=question().zones.length;$('progress').textContent=`Hoàn thành: ${done}/${total}`}
+function switchQuestion(n){project.active=clamp(n,0,project.questions.length-1);clearStage();updateEditor();preload();updateNavigation()}
+// ======================================
+// RENDER CANVAS VÀ HIỆU ỨNG
+// ======================================
+function drawBg(){
+ const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#e7f8ff');bg.addColorStop(.52,'#f6f7ff');bg.addColorStop(1,'#fff1dc');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+ for(const [x,y,r,c] of [[40,90,78,'#fff8b4'],[1132,85,110,'#e6e0ff'],[112,600,95,'#d1f5e4'],[1110,600,82,'#ffdce1']]){ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}
+ for(let i=0;i<15;i++){ctx.save();ctx.translate(50+i*80,90+Math.sin(i*3)*30);ctx.rotate(i*.6);ctx.fillStyle='#ffffff88';ctx.fillRect(-3,-3,6,6);ctx.restore()}
+ const b=question().background;if(b){const a=assetCache.get(b);if(a){const scale=Math.min(W/a.width,H/a.height),dw=a.width*scale,dh=a.height*scale;ctx.drawImage(a.img,(W-dw)/2,(H-dh)/2,dw,dh)}}
+}
+function paintCircle(x,y,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}
+function drawPattern(){
+ if(!question().demo)return;
+ const colorIx=[0,1,2,0,1,2,null,1,2];
+ for(let i=0;i<9;i++){
+  const x=148+i*114;if(colorIx[i]===null)continue;
+  ctx.save();ctx.shadowColor='#5379aa19';ctx.shadowBlur=8;ctx.shadowOffsetY=5;
+  if(question().demo==='shapes'){
+   const a=assetCache.get(question().items[colorIx[i]].data);
+   if(a)ctx.drawImage(a.img,x-47,294-47,94,94);
+  }else{paintCircle(x,294,47,colors[colorIx[i]])}
+  ctx.restore();
+ }
+}
+function drawZone(zone,now){
+ if(stage.occupied[zone.id]&&!editMode)return;
+ const hover=stage.drag?.zoneId===zone.id;
+ ctx.save();ctx.lineWidth=hover?5:3;ctx.setLineDash([12,8]);
+ ctx.strokeStyle=editMode?(selectedZone===zone.id?'#ff7e57':'#3981f2'):(hover?'#38bfa3':'#77b3e4');
+ ctx.fillStyle=hover?'#d6ffeeb3':'#ffffffa8';if(!zone.noRing||editMode){ctx.beginPath();ctx.arc(zone.x,zone.y,zone.r,0,7);ctx.fill();ctx.stroke()}ctx.setLineDash([]);
+ ctext(editMode?'＋':'?',zone.x,zone.y+3,54,hover?'#1caa7b':'#3996c9');
+ if(editMode)ctext(zone.id.slice(-4),zone.x,zone.y+zone.r+17,12,'#4385bf');ctx.restore();
+}
+function drawItem(it,now){
+ const asset=assetCache.get(it.data);if(!asset)return;
+ const position=activePosition(it),dragged=stage.drag?.itemId===it.id;
+ const sc=dragged?1.085:1;
+ const sz=it.size*sc,s=sz/Math.max(asset.width,asset.height),w=asset.width*s,h=asset.height*s;
+ ctx.save();ctx.translate(position.x,position.y);ctx.rotate((stage.animations.get(it.id)?.rotation||0)*Math.PI/180);
+ ctx.shadowColor=dragged?'#3461ac55':'#4e7fa93d';ctx.shadowBlur=dragged?22:12;ctx.shadowOffsetY=dragged?13:7;
+ ctx.drawImage(asset.img,-w/2,-h/2,w,h);ctx.restore();
+ if(!editMode&&it.label&&(!stage.locked.has(it.id)||dragged)){ctext(it.label+'.',it.x-84,it.y+9,39,'#2498dc')}
+ if(editMode){ctx.save();ctx.strokeStyle=selectedItem===it.id?'#ff8e3a':'#96b8dd';ctx.lineWidth=selectedItem===it.id?3:1;ctx.setLineDash([5,5]);ctx.strokeRect(position.x-w/2-5,position.y-h/2-5,w+10,h+10);ctx.restore();ctext(it.name,position.x,position.y+sz/2+23,14,'#3c5b91')}
+}
+function drawFeedback(now){
+ for(const fx of [...stage.effects]){
+  const age=now-fx.start,dur=reduced?150:620;if(age>dur){stage.effects.splice(stage.effects.indexOf(fx),1);continue}
+  const t=age/dur;ctx.save();ctx.globalAlpha=Math.min(1,1.7*(1-t));ctx.translate(fx.x,fx.y);
+  if(fx.kind==='wrong'){
+   ctx.scale(.55+Math.min(t/.3,1)*.65,.55+Math.min(t/.3,1)*.65);ctx.strokeStyle='#e83c5e';ctx.lineWidth=13;ctx.lineCap='round';ctx.shadowColor='#fff';ctx.shadowBlur=12;
+   ctx.beginPath();ctx.moveTo(-23,-23);ctx.lineTo(23,23);ctx.moveTo(23,-23);ctx.lineTo(-23,23);ctx.stroke();
+  }else{
+   ctx.strokeStyle='#1bc98c';ctx.lineWidth=10;ctx.lineCap='round';ctx.shadowColor='#83efc0';ctx.shadowBlur=24;
+   ctx.beginPath();ctx.moveTo(-22,1);ctx.lineTo(-5,18);ctx.lineTo(29,-24);ctx.stroke();
+   for(let j=0;j<12;j++){const angle=j*Math.PI/6;paintCircle(Math.cos(angle)*(40+t*45),Math.sin(angle)*(40+t*45),4,'#ffd554')}
+  }ctx.restore();
+ }
+}
+function updateAnimations(now){
+ for(const [id,a] of stage.animations){let t=clamp((now-a.start)/a.duration,0,1);
+  if(a.type==='return'){
+   // Giai đoạn đầu bị đẩy khỏi đích, sau đó bay về và nảy nhẹ.
+   if(t<.22){const p=easeOut(t/.22);a.x=lerp(a.from.x,a.kick.x,p);a.y=lerp(a.from.y,a.kick.y,p)}
+   else{const p=easeOutBack((t-.22)/.78);a.x=lerp(a.kick.x,a.to.x,p);a.y=lerp(a.kick.y,a.to.y,p)}
+   a.rotation=Math.sin(t*Math.PI)*8*(1-t);
+  }else{const p=easeOutBack(t);a.x=lerp(a.from.x,a.to.x,p);a.y=lerp(a.from.y,a.to.y,p);a.rotation=0}
+  if(t>=1){stage.positions[id]={...a.to};stage.animations.delete(id);if(a.type==='return')playSound('back');if(a.type==='snap'){stage.locked.add(id);stage.occupied[a.zoneId]=id;updateProgress();checkCompletion()}}
+ }
+}
+function draw(now){
+ stage.time=now;updateAnimations(now);
+ ctx.clearRect(0,0,W,H);
+ let sx=0,sy=0;if(!reduced&&now-stage.shakeStart<410){const t=(now-stage.shakeStart)/410;const power=10*(1-t);sx=Math.sin(t*70)*power;sy=Math.sin(t*47)*power*.22}
+ ctx.save();ctx.translate(sx,sy);drawBg();
+ // Header nổi trên mặt bàn học.
+ rounded(35,31,1130,119,27,'#ffffffef');outlined(35,31,1130,119,27,'#e7eefb');
+ rounded(53,48,138,32,16,'#fff1bb');ctext('BÀI TẬP VUI',122,64,15,'#be831b');
+ ctext(question().title,600,80,36,'#244e93');
+ wrapText(question().instruction,600,119,1020,23,1);
+ if(!question().background){
+  rounded(48,174,1104,248,27,'#ffffffb8');outlined(48,174,1104,248,27,'#dceafb',2);
+  rounded(48,450,1104,196,27,'#ffffffcc');outlined(48,450,1104,196,27,'#e1e6f8',2);
+  ctext('KÉO HÌNH PHÙ HỢP',600,476,17,'#8da0c4');
+ }
+ drawPattern();
+ for(const zone of question().zones)drawZone(zone,now);
+ for(const it of question().items)if(!stage.drag||stage.drag.itemId!==it.id)drawItem(it,now);
+ if(stage.drag?.itemId){const it=getItem(stage.drag.itemId);if(it)drawItem(it,now)}
+ drawFeedback(now);
+ ctx.restore();
+ if(stage.redStart&&now-stage.redStart<(reduced?140:370)){const t=(now-stage.redStart)/(reduced?140:370);ctx.fillStyle=`rgba(255,51,76,${.31*(1-t)})`;ctx.fillRect(0,0,W,H)}
+ requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+// ======================================
+// POINTER EVENTS: ĐÚNG PIXEL ALPHA
+// ======================================
+function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
+function itemAt(x,y){
+ for(const it of [...question().items].reverse()){
+  if(!editMode&&stage.locked.has(it.id))continue;
+  const asset=assetCache.get(it.data);if(!asset)continue;
+  const p=activePosition(it),s=it.size/Math.max(asset.width,asset.height),w=asset.width*s,h=asset.height*s;
+  const px=Math.floor((x-(p.x-w/2))*asset.width/w),py=Math.floor((y-(p.y-h/2))*asset.height/h);
+  if(px<0||py<0||px>=asset.width||py>=asset.height)continue;
+  if(asset.alpha[py*asset.width+px]>28)return it;
+ }return null;
+}
+function zoneAt(x,y,tolerant=false){return [...question().zones].reverse().find(z=>Math.hypot(x-z.x,y-z.y)<z.r+(tolerant?24:0))||null}
+let editStart=null;
+canvas.addEventListener('pointerdown',e=>{
+ if(stage.drag||(!editMode&&stage.completed))return;
+ const p=point(e),it=itemAt(p.x,p.y),z=!it&&editMode?zoneAt(p.x,p.y):null;
+ if(!it&&!z)return;
+ e.preventDefault();canvas.setPointerCapture(e.pointerId);
+ const pos=it?activePosition(it):z;
+ stage.drag={pointerId:e.pointerId,itemId:it?.id||null,zoneMoveId:z?.id||null,startX:p.x,startY:p.y,offsetX:pos.x-p.x,offsetY:pos.y-p.y,targetX:pos.x,targetY:pos.y,zoneId:null};
+ if(editMode){pushHistory();editStart=clone(project);selectedItem=it?.id||null;selectedZone=z?.id||null;updateEditor()}
+ if(it){stage.animations.delete(it.id);stage.positions[it.id]={x:pos.x,y:pos.y};playSound('lift')}
+ canvas.classList.add('dragging');
+});
+canvas.addEventListener('pointermove',e=>{
+ const d=stage.drag;if(!d||d.pointerId!==e.pointerId)return;
+ const p=point(e),x=clamp(p.x+d.offsetX,30,W-30),y=clamp(p.y+d.offsetY,35,H-35);
+ d.targetX=x;d.targetY=y;
+ if(d.itemId){
+  const cur=stage.positions[d.itemId]||{x,y};stage.positions[d.itemId]={x:lerp(cur.x,x,.79),y:lerp(cur.y,y,.79)};
+  const z=zoneAt(x,y,true);d.zoneId=z&&!stage.occupied[z.id]?z.id:null;
+  if(!editMode&&!d.soundMoved&&Math.hypot(p.x-d.startX,p.y-d.startY)>35){playSound('drag');d.soundMoved=true}
+ }else if(editMode&&d.zoneMoveId){const z=getZone(d.zoneMoveId);if(z){z.x=x;z.y=y}}
+ if(editMode&&d.itemId){const it=getItem(d.itemId);if(it){it.x=x;it.y=y}}
+});
+function finishPointer(e,canceled=false){
+ const d=stage.drag;if(!d||d.pointerId!==e.pointerId)return;
+ if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);
+ stage.drag=null;canvas.classList.remove('dragging');
+ if(editMode){if(editStart&&JSON.stringify(project)===JSON.stringify(editStart)){history.pop()}else commit();editStart=null;return}
+ if(!d.itemId)return;
+ const it=getItem(d.itemId),p=point(e);
+ const dropped={x:clamp(p.x+d.offsetX,30,W-30),y:clamp(p.y+d.offsetY,35,H-35)};
+ stage.positions[it.id]=dropped;
+ const zone=!canceled?zoneAt(dropped.x,dropped.y,true):null;
+ if(!zone||stage.occupied[zone.id]){startReturn(it,dropped,false);return}
+ if(it.targetId===zone.id){
+  stage.effects.push({kind:'correct',x:zone.x,y:zone.y,start:performance.now()});stage.occupied[zone.id]=it.id;playSound('good');
+  stage.animations.set(it.id,{type:'snap',start:performance.now(),duration:reduced?100:420,from:dropped,to:{x:zone.x,y:zone.y},zoneId:zone.id,x:dropped.x,y:dropped.y});
+ }else{
+  stage.redStart=stage.shakeStart=performance.now();stage.effects.push({kind:'wrong',x:zone.x,y:zone.y,start:performance.now()});playSound('bad');startReturn(it,dropped,true)
+ }
+}
+canvas.addEventListener('pointerup',e=>finishPointer(e));
+canvas.addEventListener('pointercancel',e=>finishPointer(e,true));
+addEventListener('blur',()=>{if(stage.drag){const d=stage.drag;finishPointer({pointerId:d.pointerId,clientX:canvas.getBoundingClientRect().left+d.targetX*canvas.clientWidth/W,clientY:canvas.getBoundingClientRect().top+d.targetY*canvas.clientHeight/H},true)}});
+function startReturn(it,from,isWrong){
+ const home={x:it.x,y:it.y};const vx=from.x-home.x,vy=from.y-home.y;
+ const mag=Math.hypot(vx,vy)||1;
+ const kick={x:clamp(from.x+vx/mag*(isWrong?31:0),25,W-25),y:clamp(from.y+vy/mag*(isWrong?24:0),25,H-25)};
+ stage.animations.set(it.id,{type:'return',from,kick,to:home,x:from.x,y:from.y,start:performance.now(),duration:reduced?130:isWrong?680:340,rotation:0});
+}
+function checkCompletion(){
+ if(stage.completed||question().zones.length===0||stage.locked.size<question().zones.length)return;
+ stage.completed=true;playSound('win');$('winText').textContent=`Con đã hoàn thành ${stage.locked.size}/${question().zones.length} vị trí. Giỏi lắm!`;
+ $('nextBtn').disabled=project.active>=project.questions.length-1;
+ setTimeout(()=>{if(stage.completed&&!editMode)$('winOverlay').classList.add('show')},reduced?140:650)
+}
+// ======================================
+// ÂM THANH WEB AUDIO KHÔNG CẦN FILE
+// ======================================
+let audioCtx=null,soundOn=true;
+function playSound(type){if(!soundOn)return;try{
+ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();
+ const sounds={lift:[[520,.045]],drag:[[460,.028]],back:[[390,.035]],good:[[670,.11],[880,.14]],bad:[[280,.12],[210,.14]],win:[[540,.11],[710,.11],[920,.24]]};
+ let offset=0;for(const [freq,dur] of sounds[type]||[]){const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type=type==='bad'?'triangle':'sine';osc.frequency.value=freq;gain.gain.setValueAtTime(.0001,audioCtx.currentTime+offset);gain.gain.exponentialRampToValueAtTime(.12,audioCtx.currentTime+offset+.015);gain.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+offset+dur);osc.connect(gain);gain.connect(audioCtx.destination);osc.start(audioCtx.currentTime+offset);osc.stop(audioCtx.currentTime+offset+dur+.02);offset+=dur*.85}
+ }catch(err){console.warn('Âm thanh không khả dụng',err)}}
+// ======================================
+// GIAO DIỆN GIÁO VIÊN
+// ======================================
+function updateEditor(){
+ $('questionSelect').replaceChildren(...project.questions.map((q,i)=>new Option(`${i+1}. ${q.title}`,String(i))));$('questionSelect').value=String(project.active);
+ $('qTitle').value=question().title;$('qInstruction').value=question().instruction;
+ const items=question().items,zones=question().zones;
+ if(!items.some(i=>i.id===selectedItem))selectedItem=items[0]?.id||null;
+ if(!zones.some(z=>z.id===selectedZone))selectedZone=zones[0]?.id||null;
+ $('itemSelect').replaceChildren(new Option('— Chưa chọn —',''),...items.map(i=>new Option(i.name,i.id)));
+ $('itemSelect').value=selectedItem||'';
+ $('zoneSelect').replaceChildren(new Option('— Chưa chọn —',''),...zones.map((z,i)=>new Option(`Vùng thả ${i+1}`,z.id)));
+ $('zoneSelect').value=selectedZone||'';
+ const it=selectedItem?getItem(selectedItem):null;
+ $('itemName').value=it?.name||'';$('itemSize').value=it?.size||'';
+ $('targetSelect').replaceChildren(new Option('— Không có —',''),...zones.map((z,i)=>new Option(`Vùng thả ${i+1}`,z.id)));
+ $('targetSelect').value=it?.targetId||'';
+ const z=selectedZone?getZone(selectedZone):null;$('zoneRadius').value=z?.r||'';
+ $('deleteItem').disabled=!it;$('deleteZone').disabled=!z;$('undoBtn').disabled=history.length===0;$('redoBtn').disabled=future.length===0;
+ $('hint').textContent=editMode?'🖱 Kéo hình hoặc vùng thả đến vị trí mong muốn.':`👆 ${question().instruction}`;
+ $('editHelp').textContent=editMode?'Tất cả vị trí được tính theo hệ tọa độ Canvas.':'Thả bên ngoài vùng đích sẽ tự trở về.';
+}
+function setMode(on){editMode=on;$('layout').classList.toggle('edit',on);canvas.classList.toggle('edit-mode',on);$('editBtn').classList.toggle('active',on);$('editBtn').textContent=on?'▶ Chơi thử':'⚙ Chế độ giáo viên';clearStage();updateEditor()}
+$('editBtn').onclick=()=>setMode(!editMode);
+$('previewBtn').onclick=()=>setMode(false);
+$('resetBtn').onclick=()=>{clearStage();notify('Đã bắt đầu lại bài tập!')};
+$('againBtn').onclick=()=>clearStage();
+$('nextBtn').onclick=()=>switchQuestion(project.active+1);
+const lessonNav=document.createElement('div'); lessonNav.style.cssText='display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px 0;font-weight:700;';
+lessonNav.innerHTML='<button type="button" class="btn secondary" id="lessonPrev">← Bài trước</button><span id="lessonCount" style="font-weight:700;color:#244e93"></span><button type="button" class="btn secondary" id="lessonNext">Bài tiếp →</button>';
+document.querySelector('#stageWrap').insertAdjacentElement('beforebegin',lessonNav);
+$('lessonPrev').onclick=()=>switchQuestion(project.active-1);
+$('lessonNext').onclick=()=>switchQuestion(project.active+1);
+function updateNavigation(){$('lessonCount').textContent='Bài '+(project.active+1)+'/'+project.questions.length;$('lessonPrev').disabled=project.active===0;$('lessonNext').disabled=project.active===project.questions.length-1}
+updateNavigation();
+$('soundBtn').onclick=()=>{soundOn=!soundOn;$('soundBtn').textContent=soundOn?'🔊 Âm thanh':'🔇 Đã tắt'};
+$('fullBtn').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('stageWrap').requestFullscreen()}catch(err){notify('Trình duyệt không hỗ trợ chế độ toàn màn hình ở đây.')}};
+$('questionSelect').onchange=e=>switchQuestion(Number(e.target.value));
+function editField(el,handler){el.addEventListener('change',()=>{pushHistory();handler(el.value);clearStage();commit()})}
+editField($('qTitle'),v=>question().title=v.trim()||'Bài tập mới');
+editField($('qInstruction'),v=>question().instruction=v);
+$('newQuestion').onclick=()=>{
+ pushHistory();const id=uid();project.questions.push({id,title:'Bài tập mới',instruction:'Kéo mỗi hình vào đúng vị trí.',demo:false,background:null,items:[],zones:[]});switchQuestion(project.questions.length-1);notify('Đã tạo bài tập trống. Thêm hình và vùng thả!')
+};
+$('deleteQuestion').onclick=()=>{if(project.questions.length===1){notify('Phải giữ lại ít nhất một bài.');return}if(!confirm('Xóa bài tập hiện tại?'))return;pushHistory();project.questions.splice(project.active,1);switchQuestion(Math.max(0,project.active-1))};
+$('itemSelect').onchange=e=>{selectedItem=e.target.value||null;updateEditor()};
+$('zoneSelect').onchange=e=>{selectedZone=e.target.value||null;updateEditor()};
+editField($('itemName'),v=>{const i=getItem(selectedItem);if(i)i.name=v.trim()||'Vật thể'});
+editField($('itemSize'),v=>{const i=getItem(selectedItem);if(i)i.size=clamp(Number(v)||90,25,270)});
+editField($('targetSelect'),v=>{const i=getItem(selectedItem);if(i)i.targetId=v||null});
+editField($('zoneRadius'),v=>{const z=getZone(selectedZone);if(z)z.r=clamp(Number(v)||50,25,180)});
+$('addZone').onclick=()=>{pushHistory();const z={id:uid(),x:600,y:302,r:58};question().zones.push(z);selectedZone=z.id;clearStage();commit()};
+$('deleteZone').onclick=()=>{if(!selectedZone)return;pushHistory();question().zones=question().zones.filter(z=>z.id!==selectedZone);question().items.forEach(i=>{if(i.targetId===selectedZone)i.targetId=null});selectedZone=null;clearStage();commit()};
+$('deleteItem').onclick=()=>{if(!selectedItem)return;pushHistory();question().items=question().items.filter(i=>i.id!==selectedItem);selectedItem=null;clearStage();commit()};
+$('undoBtn').onclick=()=>{if(!history.length)return;future.push(clone(project));restore(history.pop())};
+$('redoBtn').onclick=()=>{if(!future.length)return;history.push(clone(project));restore(future.pop())};
+// ======================================
+// UPLOAD, TÁCH NỀN, XEM TRƯỚC
+// ======================================
+function readFile(file,limit=9*1024*1024){return new Promise((resolve,reject)=>{
+ if(!file)return reject(Error('Chưa chọn tệp.'));if(file.size>limit)return reject(Error('Ảnh quá lớn, hãy dùng tệp nhỏ hơn 9 MB.'));
+ const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(Error('Không đọc được tệp.'));reader.readAsDataURL(file)
+})}
+let pending=null;
+$('threshold').oninput=e=>$('thresholdValue').textContent=e.target.value;
+$('itemUpload').onchange=async e=>{
+ try{const file=e.target.files[0];if(!file)return;const src=await readFile(file);const img=await imageFromData(src);if(img.width*img.height>6500000)throw Error('Ảnh vượt giới hạn xử lý.');
+ pending={original:src,processed:trimTransparent(pixelsOf(img).cvs),name:file.name.replace(/\.[^.]+$/,'')};
+ $('previewBefore').src=src;$('previewBefore').hidden=false;$('previewAfter').src=pending.processed;$('previewAfter').hidden=false;$('addImage').disabled=false;notify('Đã tải ảnh. Bạn có thể tách nền rồi bấm Dùng ảnh này.')
+ }catch(err){notify('Lỗi: '+err.message)}
+};
+$('removeWhite').onclick=async()=>{if(!pending)return notify('Hãy tải ảnh trước.');try{const img=await imageFromData(pending.original);pending.processed=removePlainBackground(img,Number($('threshold').value));$('previewAfter').src=pending.processed;notify('Đã tách nền. Kiểm tra hình trong ô Sau.')}catch(err){notify('Lỗi tách nền: '+err.message)}};
+$('undoCut').onclick=async()=>{if(!pending)return;try{pending.processed=trimTransparent(pixelsOf(await imageFromData(pending.original)).cvs);$('previewAfter').src=pending.processed;notify('Đã hoàn tác bước tách nền.')}catch(err){notify(err.message)}};
+$('addImage').onclick=async()=>{
+ if(!pending)return;try{await registerAsset(pending.processed);pushHistory();const it={id:uid(),name:pending.name||'Hình mới',data:pending.processed,x:340+(question().items.length%4)*170,y:555,size:94,targetId:null,label:''};question().items.push(it);selectedItem=it.id;clearStage();commit();notify('Đã thêm hình. Kéo hình để bố trí và gán vùng thả đúng.')}catch(err){notify(err.message)}
+};
+$('bgUpload').onchange=async e=>{try{const src=await readFile(e.target.files[0]);await registerAsset(src);pushHistory();question().background=src;clearStage();commit();notify('Đã thêm ảnh nền bài tập.')}catch(err){notify(err.message)}};
+$('removeBg').onclick=()=>{pushHistory();question().background=null;clearStage();commit()};
+// ======================================
+// INDEXEDDB, NHẬP XUẤT JSON
+// ======================================
+function dbOpen(){return new Promise((resolve,reject)=>{
+ if(!('indexedDB' in window))return reject(Error('Thiết bị không hỗ trợ IndexedDB.'));
+ const req=indexedDB.open('MagicDragGame',1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains('projects'))req.result.createObjectStore('projects')};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)
+})}
+async function saveProject(){const db=await dbOpen();return new Promise((resolve,reject)=>{const tx=db.transaction('projects','readwrite');tx.objectStore('projects').put(clone(project),'current');tx.oncomplete=()=>{db.close();resolve()};tx.onerror=()=>{db.close();reject(tx.error)}})}
+async function loadProject(){const db=await dbOpen();return new Promise((resolve,reject)=>{const tx=db.transaction('projects','readonly');const rq=tx.objectStore('projects').get('current');rq.onsuccess=()=>{db.close();resolve(rq.result)};rq.onerror=()=>{db.close();reject(rq.error)}})}
+$('saveBtn').onclick=async()=>{try{await saveProject();notify('Đã lưu toàn bộ bài tập và hình ảnh vào trình duyệt!')}catch(err){notify('Không thể lưu: '+err.message)}};
+function downloadJSON(){const blob=new Blob([JSON.stringify(project,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='bai-tap-keo-tha.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
+$('exportBtn').onclick=downloadJSON;
+function checkProject(p){if(!p||!Array.isArray(p.questions)||!p.questions.length)throw Error('File JSON không có danh sách bài tập.');
+ for(const q of p.questions){if(!Array.isArray(q.items)||!Array.isArray(q.zones)||typeof q.title!=='string')throw Error('Cấu trúc bài tập không hợp lệ.');for(const it of q.items){if(typeof it.data!=='string'||!it.data.startsWith('data:image/'))throw Error('Có ảnh vật thể không hợp lệ.');if(!Number.isFinite(it.x)||!Number.isFinite(it.y)||!Number.isFinite(it.size))throw Error('Tọa độ vật thể không hợp lệ.')}for(const z of q.zones){if(!Number.isFinite(z.x)||!Number.isFinite(z.y)||!Number.isFinite(z.r))throw Error('Tọa độ vùng thả không hợp lệ.')}}
+ p.active=clamp(Number(p.active)||0,0,p.questions.length-1);return p;}
+$('importFile').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>30*1024*1024)throw Error('File vượt 30 MB.');const p=checkProject(JSON.parse(await file.text()));pushHistory();restore(p);notify('Đã nhập dự án! Bạn có thể tiếp tục chỉnh sửa hoặc chơi thử.')}catch(err){notify('Không thể nhập: '+err.message)}};
+async function init(){try{const saved=await loadProject();if(saved){let p=checkProject(saved);if(p.questions.length<2&&p.questions[0]?.id==='sample'){p.questions.push(demo().questions[1])}restore(p);notify('Đã khôi phục bản nháp đã lưu trên trình duyệt.')}else{updateEditor();preload()}updateNavigation()}catch(err){updateEditor();preload();console.warn('Bản nháp chưa tải được:',err)}}
+init();
+</script>
+</body>
+</html>
