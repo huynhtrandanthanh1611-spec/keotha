@@ -374,11 +374,52 @@ function checkCompletion(){
 // ÂM THANH WEB AUDIO KHÔNG CẦN FILE
 // ======================================
 let audioCtx=null,soundOn=true;
-function playSound(type){if(!soundOn)return;try{
- audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();
- const sounds={lift:[[520,.045]],drag:[[460,.028]],back:[[390,.035]],good:[[670,.11],[880,.14]],bad:[[280,.12],[210,.14]],win:[[540,.11],[710,.11],[920,.24]]};
- let offset=0;for(const [freq,dur] of sounds[type]||[]){const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type=type==='bad'?'triangle':'sine';osc.frequency.value=freq;gain.gain.setValueAtTime(.0001,audioCtx.currentTime+offset);gain.gain.exponentialRampToValueAtTime(.12,audioCtx.currentTime+offset+.015);gain.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+offset+dur);osc.connect(gain);gain.connect(audioCtx.destination);osc.start(audioCtx.currentTime+offset);osc.stop(audioCtx.currentTime+offset+dur+.02);offset+=dur*.85}
- }catch(err){console.warn('Âm thanh không khả dụng',err)}}
+function getAudio(){
+ const AudioEngine=window.AudioContext||window.webkitAudioContext;
+ if(!AudioEngine)return null;
+ audioCtx=audioCtx||new AudioEngine();
+ if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});
+ return audioCtx;
+}
+// Mở khóa âm thanh trong thao tác trực tiếp của học sinh (đặc biệt trên điện thoại).
+canvas.addEventListener('pointerdown',()=>{if(soundOn)getAudio()},{passive:true});
+function tone(ctx,freq,start,duration,{wave='sine',volume=.16,to=freq}={}){
+ const oscillator=ctx.createOscillator(),gain=ctx.createGain();
+ oscillator.type=wave;
+ oscillator.frequency.setValueAtTime(Math.max(1,freq),start);
+ if(to!==freq)oscillator.frequency.exponentialRampToValueAtTime(Math.max(1,to),start+duration);
+ gain.gain.setValueAtTime(.0001,start);
+ gain.gain.exponentialRampToValueAtTime(volume,start+Math.min(.018,duration/5));
+ gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
+ oscillator.connect(gain);gain.connect(ctx.destination);
+ oscillator.start(start);oscillator.stop(start+duration+.025);
+}
+// Đúng: tiếng chuông 3 nốt đi lên, tươi sáng.
+// Sai: hai tiếng bíp trầm đi xuống, rõ nhưng không gây giật mình.
+// Win: đoạn nhạc chúc mừng riêng, không cần tải file MP3.
+function playSound(type){
+ if(!soundOn)return;
+ try{
+  const ctx=getAudio();if(!ctx)return;
+  const t=ctx.currentTime+.012;
+  if(type==='good'){
+   tone(ctx,659.25,t,.13,{wave:'sine',volume:.19});
+   tone(ctx,783.99,t+.10,.15,{wave:'sine',volume:.19});
+   tone(ctx,1046.5,t+.21,.28,{wave:'sine',volume:.21});
+  }else if(type==='bad'){
+   tone(ctx,330,t,.19,{wave:'triangle',volume:.14,to:275});
+   tone(ctx,247,t+.19,.25,{wave:'triangle',volume:.14,to:196});
+  }else if(type==='win'){
+   [523.25,659.25,783.99,1046.5].forEach((note,i)=>tone(ctx,note,t+i*.13,i===3?.42:.16,{volume:.18}));
+  }else if(type==='lift'){
+   tone(ctx,490,t,.055,{volume:.055});
+  }else if(type==='drag'){
+   tone(ctx,450,t,.04,{volume:.04});
+  }else if(type==='back'){
+   tone(ctx,370,t,.07,{volume:.045,to:290});
+  }
+ }catch(err){console.warn('Âm thanh không khả dụng',err)}
+}
 // ======================================
 // GIAO DIỆN GIÁO VIÊN
 // ======================================
